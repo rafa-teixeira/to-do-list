@@ -1,3 +1,18 @@
 spring:
   application:
     name: to-do-list
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/to_do_list?useTimezone=true&serverTimezone=UTC
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+    show_sql: false
+    open-in-view: false
+logging:
+  level:
+    root: WARN
