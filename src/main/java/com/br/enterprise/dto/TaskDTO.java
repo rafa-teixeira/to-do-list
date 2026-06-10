@@ -1,11 +1,13 @@
 package com.br.enterprise.dto;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class TaskDTO implements Serializable {
+public class TaskDTO extends RepresentationModel<TaskDTO> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

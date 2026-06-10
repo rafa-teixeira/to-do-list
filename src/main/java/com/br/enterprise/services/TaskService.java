@@ -1,5 +1,6 @@
 package com.br.enterprise.services;
 
+import com.br.enterprise.assembler.TaskAssembler;
 import com.br.enterprise.dto.TaskDTO;
 import com.br.enterprise.exception.ResourceNotFoundException;
 import com.br.enterprise.mapper.Mapper;
@@ -16,12 +17,14 @@ public class TaskService {
 
     private final Logger logger =Logger.getLogger(TaskService.class.getName());
 
-    TaskRepository repository;
-    Mapper mapper;
+    private final TaskRepository repository;
+    private final Mapper mapper;
+    private final TaskAssembler assembler;
 
-    public TaskService(TaskRepository repository, Mapper mapper) {
+    public TaskService(TaskRepository repository, Mapper mapper, TaskAssembler assembler) {
         this.repository = repository;
         this.mapper = mapper;
+        this.assembler = assembler;
     }
 
     public List<TaskDTO> findAll(){
@@ -31,6 +34,7 @@ public class TaskService {
 
         return entities.stream()
                 .map(mapper::convertEntityToDTO)
+                .map(assembler::toModel)
                 .toList();
     }
 
@@ -40,7 +44,7 @@ public class TaskService {
         Task entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No tasks were found for the provided ID."));
 
-        return mapper.convertEntityToDTO(entity);
+        return assembler.toModel(mapper.convertEntityToDTO(entity));
     }
 
     public TaskDTO create(TaskDTO dto){
@@ -53,7 +57,7 @@ public class TaskService {
         entity.setUpdatedAt(LocalDateTime.now());
 
         Task savedEntity = repository.save(entity);
-        return mapper.convertEntityToDTO(savedEntity);
+        return assembler.toModel(mapper.convertEntityToDTO(savedEntity));
     }
 
     public TaskDTO update(TaskDTO dto){
@@ -69,7 +73,7 @@ public class TaskService {
         entity.setUpdatedAt(java.time.LocalDateTime.now());
 
         //mapper ao final para que createdAt não seja alterado.
-        return mapper.convertEntityToDTO(repository.save(entity));
+        return assembler.toModel(mapper.convertEntityToDTO(repository.save(entity)));
     }
 
     public void delete(Long id){
